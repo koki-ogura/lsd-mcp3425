@@ -1,6 +1,6 @@
 {
   "name": "lsd-mcp3425",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "mcp3425 adc class via i2c",
   "main": "index.js",
   "homepage": "https://github.com/koki-ogura/lsd-mcp3425",

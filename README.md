@@ -61,7 +61,7 @@ if (!mcp3425) {
     mcp3425.init(16, 1);
 }
 mcp3425.async_get_voltage((err, res) => {
-    var msg = {}
+    var msg = {};
     msg.payload = res;
     node.send(msg);
 })
