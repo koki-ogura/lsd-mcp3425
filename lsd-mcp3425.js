@@ -12,6 +12,22 @@ class mcp3425 {
 	return res;
     }
     
+    sint14(byte0, byte1) {
+	var res = ((byte1 << 8) + byte0) & 0x3fff;
+	if ((res & 0x2000) == 0x2000) {
+	    res = res - 0x4000;
+	}
+	return res;
+    }
+    
+    sint12(byte0, byte1) {
+	var res = ((byte1 << 8) + byte0) & 0xfff;
+	if ((res & 0x800) == 0x800) {
+	    res = res - 0x1000;
+	}
+	return res;
+    }
+    
     constructor(addr, device) {
 	this.wire = new i2c(addr, {device: device});
 	this.first = true;
@@ -22,6 +38,7 @@ class mcp3425 {
 	if (bits != 12 && bits != 14 && bits != 16) {
 	    bits = 12;
 	}
+	this.bits = bits;
 	if (gain != 1 && gain != 2 && gain != 4 && gain != 8) {
 	    gain = 1;
 	}
@@ -54,7 +71,16 @@ class mcp3425 {
 	this.wire.write([this.command], (err) => {});
 	sleep.msleep(this.delay);
 	this.wire.read(2, (err, res) => {
-	    var v = this.sint16(res[1], res[0]) / this.gain;
+	    var v = 0;
+	    if (this.bits == 16) {
+		v = this.sint16(res[1], res[0]) / this.gain;
+	    }
+	    else if (this.bits == 14) {
+		v = this.sint14(res[1], res[0]) / this.gain;
+	    }
+	    else {
+		v = this.sint12(res[1], res[0]) / this.gain;
+	    }
 	    callback(null, {"voltage":v});
 	});
     }
